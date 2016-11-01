@@ -1,16 +1,7 @@
 {
 open Lexing
 open Graphql_parser
-
-type error =
-  | Illegal_character of char
-  | Illegal_escape of string
-  | Unterminated_string
-  | Unterminated_string_in_comment of Location.t * Location.t
-  | Keyword_as_label of string
-  | Literal_overflow of string
-
-exception Error of error * Location.t
+open Syntax_error
 
 let remove_underscores s =
   let l = String.length s in
@@ -119,6 +110,8 @@ let keyword_table =
     "implements", IMPLEMENTS;
     "input", INPUT;
     "interface", INTERFACE;
+    "mutation", MUTATION;
+    "query", QUERY;
     "scalar", SCALAR;
     "schema", SCHEMA;
     "true", TRUE;
@@ -152,6 +145,8 @@ let report_error ppf = function
   | Literal_overflow ty ->
       fprintf ppf "Integer literal exceeds the range of representable \
                    integers of type %s" ty
+  | BadThing str ->
+      fprintf ppf "%s" str
 
 let () =
   Location.register_error_of_exn
@@ -175,10 +170,8 @@ let oct_literal =
   '0' ['o' 'O'] ['0'-'7'] ['0'-'7' '_']*
 let bin_literal =
   '0' ['b' 'B'] ['0'-'1'] ['0'-'1' '_']*
-
 let int_literal =
   decimal_literal | hex_literal | oct_literal | bin_literal
-
 let float_literal =
   ['0'-'9'] ['0'-'9' '_']*
   ('.' ['0'-'9' '_']* )?
@@ -254,6 +247,8 @@ rule token = parse
 | "FRAGMENT_DEFINITION" { FRAGMENT_DEFINITION_CAPS }
 | "FRAGMENT_SPREAD" { FRAGMENT_SPREAD_CAPS }
 | "INLINE_FRAGMENT" { INLINE_FRAGMENT_CAPS }
+| "query" { QUERY }
+| "mutation" { MUTATION }
 | eof { EOF }
 | _
     {
@@ -263,6 +258,7 @@ rule token = parse
 and comment = parse
   | newline | eof
       {
+        update_loc lexbuf None 1 false 0;
         match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf

@@ -1,49 +1,86 @@
-%token COLON
-%token ENUM
-%token TYPE
-%token LBRACE
-%token RBRACE
-%token <string> IDENT
-%token EOF
-%token LBRACKET
-%token RBRACKET
-%token INTERFACE
-%token SCALAR
-%token SCHEMA
-%token UNION
-%token BAR
+%{
+  open Location
+  open Syntax_error
+
+  let ast = ref Ast.{
+    schema = None;
+    scalars = [];
+    typeDeclarations = [];
+    interfaces = [];
+    unions = [];
+    enums = [];
+    extends = [];
+    inputs = [];
+    directives = [];
+  }
+
+  let mklocation loc_start loc_end = {
+    loc_start = loc_start;
+    loc_end = loc_end;
+    loc_ghost = false;
+  }
+
+%}
+
 %token AT
+%token BANG
+%token BAR
+%token COLON
+%token COMMA
+%token DIRECTIVE
+%token ENUM
+%token EOF
 %token EQUAL
 %token EXTEND
-%token LPAREN
-%token RPAREN
-%token COMMA
-%token <string> STRING
-%token <int> INT
-%token BANG
-%token INPUT
-%token TRUE
 %token FALSE
-%token <string> FLOAT
-%token IMPLEMENTS
-
-%token DIRECTIVE
-%token ON
-%token QUERY_CAPS
-%token MUTATION_CAPS
 %token FIELD_CAPS
+%token <string> FLOAT
 %token FRAGMENT_DEFINITION_CAPS
 %token FRAGMENT_SPREAD_CAPS
+%token <string> IDENT
+%token IMPLEMENTS
 %token INLINE_FRAGMENT_CAPS
+%token INPUT
+%token <int> INT
+%token INTERFACE
+%token LBRACE
+%token LBRACKET
+%token LPAREN
+%token MUTATION
+%token MUTATION_CAPS
+%token ON
+%token QUERY
+%token QUERY_CAPS
+%token RBRACE
+%token RBRACKET
+%token RPAREN
+%token SCALAR
+%token SCHEMA
+%token <string> STRING
+%token TRUE
+%token TYPE
+%token UNION
 
 %start <string> prog
 
 %%
 
 prog:
-| schema prog { $1 ^ $2 }
-| scalar prog { $1 ^ $2 }
-| type_declaration prog { $1 ^ $2 }
+| schema prog
+  {
+    ast := Ast.{!ast with schema = $1};
+    $2
+  }
+| scalar prog
+  {
+    ast := Ast.{!ast with scalars = !ast.scalars @ [$1]};
+    $2
+  }
+| type_declaration prog
+  {
+    ast := Ast.{!ast with typeDeclarations = !ast.typeDeclarations};
+    $2
+  }
 | interface prog { $1 ^ $2 }
 | union prog { $1 ^ $2 }
 | enum prog { $1 ^ $2 }
@@ -99,7 +136,42 @@ more_annotation_arguments:
 
 /* schema { query: start, mutation: start, else: start} */
 schema:
-| SCHEMA LBRACE property properties RBRACE { "schema {\n" ^ $3 ^ "\n" ^ $4 ^ "}\n"  }
+  | SCHEMA LBRACE RBRACE
+    {
+      let loc = mklocation $symbolstartpos $endpos in
+      raise (Syntax_error.Error(BadThing "A schema is expected to have at least a query field", loc))
+    }
+  | SCHEMA LBRACE schema_properties RBRACE
+    {
+      let (queryX, mutationX) = $3 in
+      if queryX = None then
+        let loc = mklocation $symbolstartpos $endpos in
+        raise (Syntax_error.Error(BadThing "A schema is expected to have at least a query field", loc))
+      else
+      Some Ast.{
+        query = queryX;
+        mutation = mutationX;
+      }
+    }
+;
+
+schema_properties:
+  | QUERY COLON ident opt_mutation {
+    (Some $3, $4)
+  }
+  | MUTATION COLON ident opt_query {
+    ($4, Some $3)
+  }
+;
+
+opt_mutation:
+  | /* */ { None }
+  | MUTATION COLON IDENT { Some $3 }
+;
+
+opt_query:
+  | /* */ { None }
+  | QUERY COLON IDENT { Some $3 }
 ;
 
 opt_implements:
@@ -184,7 +256,13 @@ ident_list:
 ;
 
 scalar:
-| SCALAR ident opt_annotation { "scalar " ^ $2 ^ $3 ^ "\n"}
+| SCALAR ident opt_annotation
+    {
+      Ast.{
+        title = $2;
+        annotations = []; (* TODO *)
+      }
+    }
 ;
 
 interface:

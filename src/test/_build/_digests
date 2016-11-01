@@ -1,0 +1,7 @@
+"Resource: /Users/Sander/Projects/re-lay/src/test/server.ml": "\006\029òã\127ðß{veD\023ª¾\020°"
+"Rule: ocaml: ml -> cmo & cmi (%=graphql_server )": "Eª9T¯ó¶\030½\152Kü\134Ì0\018"
+"Rule: ocaml dependencies ml (%=server )": "\018\031!l\142\131(î\0301Ìý\141S.\134"
+"Rule: ocaml dependencies ml (%=graphql_server )": "E\t×vÖ\025Ç­r\"¨.\025gÚK"
+"Resource: /Users/Sander/Projects/re-lay/src/test/graphql_server.ml": "\155\135Ud7\"7`¢\154#À+\139Dr"
+"Rule: ocaml: ml & cmi -> cmx & o (%=graphql_server )": "\155Äæ3¬¦MÉ«[Xá(¯Ë\015"
+"Rule: ocaml: cmx* & o* -> native (%=graphql_server )": "6V¹\001T~\138qGÉ(D\024¼:ç"

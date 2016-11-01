@@ -1,0 +1,11 @@
+### Starting build.
+# Target: graphql_server.ml.depends, tags: { extension:ml, file:graphql_server.ml, ocaml, ocamldep, quiet }
+/Users/Sander/.opam/4.02.3/bin/ocamldep.opt -modules graphql_server.ml > graphql_server.ml.depends
+# Target: graphql_server.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:graphql_server.cmo, file:graphql_server.ml, implem, ocaml, quiet }
+/Users/Sander/.opam/4.02.3/bin/ocamlc.opt -c -I /Users/Sander/.opam/4.02.3/lib/base64 -I /Users/Sander/.opam/4.02.3/lib/bytes -I /Users/Sander/.opam/4.02.3/lib/cohttp -I /Users/Sander/.opam/4.02.3/lib/conduit -I /Users/Sander/.opam/4.02.3/lib/cstruct -I /Users/Sander/.opam/4.02.3/lib/fieldslib -I /Users/Sander/.opam/4.02.3/lib/ipaddr -I /Users/Sander/.opam/4.02.3/lib/lwt -I /Users/Sander/.opam/4.02.3/lib/magic-mime -I /Users/Sander/.opam/4.02.3/lib/ocaml -I /Users/Sander/.opam/4.02.3/lib/ocplib-endian -I /Users/Sander/.opam/4.02.3/lib/re -I /Users/Sander/.opam/4.02.3/lib/sexplib -I /Users/Sander/.opam/4.02.3/lib/stringext -I /Users/Sander/.opam/4.02.3/lib/uri -o graphql_server.cmo graphql_server.ml
++ /Users/Sander/.opam/4.02.3/bin/ocamlc.opt -c -I /Users/Sander/.opam/4.02.3/lib/base64 -I /Users/Sander/.opam/4.02.3/lib/bytes -I /Users/Sander/.opam/4.02.3/lib/cohttp -I /Users/Sander/.opam/4.02.3/lib/conduit -I /Users/Sander/.opam/4.02.3/lib/cstruct -I /Users/Sander/.opam/4.02.3/lib/fieldslib -I /Users/Sander/.opam/4.02.3/lib/ipaddr -I /Users/Sander/.opam/4.02.3/lib/lwt -I /Users/Sander/.opam/4.02.3/lib/magic-mime -I /Users/Sander/.opam/4.02.3/lib/ocaml -I /Users/Sander/.opam/4.02.3/lib/ocplib-endian -I /Users/Sander/.opam/4.02.3/lib/re -I /Users/Sander/.opam/4.02.3/lib/sexplib -I /Users/Sander/.opam/4.02.3/lib/stringext -I /Users/Sander/.opam/4.02.3/lib/uri -o graphql_server.cmo graphql_server.ml
+File "graphql_server.ml", line 10, characters 19-52:
+Error: This expression has type string Lwt.t
+       but an expression was expected of type string
+Command exited with code 2.
+# Compilation unsuccessful.

@@ -143,14 +143,14 @@ schema:
     }
   | SCHEMA LBRACE schema_properties RBRACE
     {
-      let (queryX, mutationX) = $3 in
-      if queryX = None then
+      let (query, mutation) = $3 in
+      if query = None then
         let loc = mklocation $symbolstartpos $endpos in
         raise (Syntax_error.Error(BadThing "A schema is expected to have at least a query field", loc))
       else
       Some Ast.{
-        query = queryX;
-        mutation = mutationX;
+        query = query;
+        mutation = mutation;
       }
     }
 ;
